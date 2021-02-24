@@ -10,3 +10,4 @@ class SceneFile(object):
 
 scene_file = SceneFile("D:\\", "tank", "model", 1, ".ma")
 print(scene_file.descriptor)
+print(scene_file.task)
