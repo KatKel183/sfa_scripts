@@ -31,7 +31,11 @@ class SceneFile(object):
         self.ver = (int(ver.split("v")[-1]))
 
 
-
-scene_file = SceneFile("D:/tank_model_v001.ma")
-print(scene_file.path)
+scene_file = SceneFile("D:/sandbox/tank_model_v001.ma")
+print(scene_file.folder_path)
+print(scene_file.descriptor)
+print(scene_file.task)
+print(scene_file.ver)
+print(scene_file.ext)
 print(scene_file.filename)
+print(scene_file.path)
