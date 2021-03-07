@@ -57,11 +57,18 @@ class SceneFile(object):
         """Return the next available version number in the folder."""
         pattern = "{descriptor}_{task}_v*{ext}".format(
             descriptor=self.descriptor, task=self.task, ext=self.ext)
-        matching_files = []
+        matching_scenefiles = []
         for file_ in self.folder_path.files():
             if file_.name.fnmatch(pattern):
-                matching_files.append(file_)
-        print(matching_files)
+                matching_scenefiles.append(file_)
+        if not matching_scenefiles:
+            return 1
+        matching_scenefiles.sort(reverse=True)
+        latest_scenefile = matching_scenefiles[0]
+        latest_scenefile.name.stripext()
+        latest_scenefile = latest_scenefile.name.stripext()
+        latest_scenefile.split("_v")
+
 
 
     def increment_save(self):
