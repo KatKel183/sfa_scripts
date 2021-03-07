@@ -53,6 +53,17 @@ class SceneFile(object):
             self.folder_path.makedirs_p()
             return pmc.system.saveAs(self.path)
 
+    def next_avail_ver(self):
+        """Return the next available version number in the folder."""
+        pattern = "{descriptor}_{task}_v*{ext}".format(
+            descriptor=self.descriptor, task=self.task, ext=self.ext)
+        matching_files = []
+        for file_ in self.folder_path.files():
+            if file_.name.fnmatch(pattern):
+                matching_files.append(file_)
+        print(matching_files)
+
+
     def increment_save(self):
         """Increments the version and saves the scene file.
 
@@ -62,5 +73,5 @@ class SceneFile(object):
         Returns:
             Path: The path to the scene file if successful.
         """
-        self.ver += 1
+        self.ver += self.next_avail_ver()
         self.save()
