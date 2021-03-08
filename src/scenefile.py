@@ -5,10 +5,11 @@ from pymel.core.system import Path
 
 log = logging.getLogger(__name__)
 
+
 class SceneFile(object):
     """An abstract representation of a Scene file"""
     def __init__(self, path=None):
-        self.folder_path = Path()
+        self.folder_path = Path("C:\\sandbox")
         self.descriptor = 'main'
         self.task = None
         self.ver = 1
@@ -79,5 +80,5 @@ class SceneFile(object):
         Returns:
             Path: The path to the scene file if successful.
         """
-        self.ver += self.next_avail_ver()
+        self.ver = self.next_avail_ver()
         self.save()
