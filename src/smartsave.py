@@ -3,6 +3,7 @@ import logging
 from PySide2 import QtWidgets, QtCore
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
+import maya.cmds as cmds
 import pymel.core as pmc
 from pymel.core.system import Path
 
@@ -21,16 +22,23 @@ class SmartSaveUI(QtWidgets.QDialog):
     def __init__(self):
         super(SmartSaveUI, self).__init__(parent=maya_main_window())
         self.setWindowTitle("Smart Save")
-        self.setMinimumWidth(500)
-        self.setMaximumHeight(200)
+        # The pixel settings are adjusted for my computer resolution
+        self.setMinimumWidth(750)
+        self.setMaximumHeight(350)
         self.setWindowFlags(self.windowFlags() ^
                             QtCore.Qt.WindowContextHelpButtonHint)
         self.create_ui()
 
     def create_ui(self):
         self.title_lbl = QtWidgets.QLabel("Smart Save")
-        self.title_lbl.setStyleSheet("font: bold 20px")
-        #   KATH DELETE THIS: set folder before using two lines below
+        self.title_lbl.setStyleSheet("font: bold 35px")
+        self.folder_lay = self._create_folder_ui()
+        self.main_lay = QtWidgets.QVBoxLayout()
+        self.main_lay.addWidget(self.title_lbl)
+        self.main_lay.addLayout(self.folder_lay)
+        self.setLayout(self.main_lay)
+
+    def _create_folder_ui(self):
         default_folder = Path(cmds.workspace(rootDirectory=True, query=True))
         default_folder = default_folder / "scenes"
         self.folder_le = QtWidgets.QLineEdit(default_folder)
@@ -38,12 +46,7 @@ class SmartSaveUI(QtWidgets.QDialog):
         layout = QtWidgets.QHBoxLayout()
         layout.addWidget(self.folder_le)
         layout.addWidget(self.folder_browse_btn)
-        self.main_lay = QtWidgets.QVBoxLayout()
-        self.main_lay.addWidget(self.title_lbl)
-        self.main_lay.addLayout(layout)
-        self.setLayout(self.main_lay)
-
-   # def folder_path_ui(self):
+        return layout
 
 
 class SceneFile(object):
