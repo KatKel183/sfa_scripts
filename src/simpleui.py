@@ -1,4 +1,4 @@
-from Pyside2 import QtWidgets
+from PySide2 import QtWidgets
 
 
 class SimpleUI(QtWidgets.QDialog):
