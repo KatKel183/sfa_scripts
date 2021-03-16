@@ -47,10 +47,19 @@ class SmartSaveUI(QtWidgets.QDialog):
         self.task_header_lbl.setStyleSheet("font:bold")
         self.ver_header_lbl = QtWidgets.QLabel("Version")
         self.ver_header_lbl.setStyleSheet("font: bold")
+        self.descriptor_le = QtWidgets.QLineEdit("main")
+        self.task_le = QtWidgets.QLineEdit("model")
+        self.ver_sbx = QtWidgets.QSpinBox()
+        self.ver_sbx.setValue(1)
+        self.ext_lbl = QtWidgets.QLabel(".ma")
         layout = QtWidgets.QGridLayout()
         layout.addWidget(self.descriptor_header_lbl, 0, 0)
         layout.addWidget(self.task_header_lbl, 0, 2)
         layout.addWidget(self.ver_header_lbl, 0, 4)
+        layout.addWidget(self.descriptor_le, 1, 0)
+        layout.addWidget(self.task_le, 1, 2)
+        layout.addWidget(self.ver_sbx, 1, 4)
+        layout.addWidget(self.ext_lbl, 1, 5)
         return layout
 
     def _create_folder_ui(self):
