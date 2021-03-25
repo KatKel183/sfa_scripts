@@ -134,6 +134,7 @@ class SmartSaveUI(QtWidgets.QDialog):
 
 class SceneFile(object):
     """An abstract representation of a Scene file"""
+
     def __init__(self, path=None):
         self._folder_path = Path(cmds.workspace(query=True,
                                                 rootDirectory=True)) / "scenes"
