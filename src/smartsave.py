@@ -27,6 +27,7 @@ class SmartSaveUI(QtWidgets.QDialog):
         self.setMaximumHeight(350)
         self.setWindowFlags(self.windowFlags() ^
                             QtCore.Qt.WindowContextHelpButtonHint)
+        self.scenefile = SceneFile()
         self.create_ui()
 
     def create_ui(self):
@@ -53,15 +54,15 @@ class SmartSaveUI(QtWidgets.QDialog):
 
     def _create_filename_ui(self):
         layout = self._create_filename_headers()
-        self.descriptor_le = QtWidgets.QLineEdit("main")
+        self.descriptor_le = QtWidgets.QLineEdit(self.scenefile.descriptor)
         self.descriptor_le.setMinimumWidth(100)
-        self.task_le = QtWidgets.QLineEdit("model")
+        self.task_le = QtWidgets.QLineEdit(self.scenefile.task)
         # width edited to be long enough for all pipeline names
         self.task_le.setFixedWidth(125)
         self.ver_sbx = QtWidgets.QSpinBox()
         self.ver_sbx.setButtonSymbols(QtWidgets.QAbstractSpinBox.PlusMinus)
         self.ver_sbx.setFixedWidth(100)
-        self.ver_sbx.setValue(1)
+        self.ver_sbx.setValue(self.scenefile.ver)
         self.ext_lbl = QtWidgets.QLabel(".ma")
         layout.addWidget(self.descriptor_le, 1, 0)
         layout.addWidget(QtWidgets.QLabel("_"), 1, 1)
@@ -94,21 +95,35 @@ class SmartSaveUI(QtWidgets.QDialog):
         layout.addWidget(self.folder_browse_btn)
         return layout
 
+    def create_connections(self):
+        """connect our widget signals to slots"""
+
+    # @QtCore.Slot()
+   # def browse_dir(self):
+    #    """Brose the directory."""
+       # dir = QtWidgets.QFileDialog.getExistingDirectory(
+           # parent=self,
+           # caption="Select Directory",
+           # dir=self.dir_le.text(),
+           # options=QtWidgets.QFileDialog.ShowDirsOnly |
+                   # QtWidgets.QFileDialog.DontResolveSymLinks)
+       # self.dir_le.setText(dir)
+
 
 class SceneFile(object):
     """An abstract representation of a Scene file"""
     def __init__(self, path=None):
-        self.folder_path = Path("C:\\sandbox")
+        self.folder_path = Path(cmds.workspace(query=True,
+                                rootDirectory=True)) /"scenes"
         self.descriptor = 'main'
-        self.task = None
+        self.task = 'model'
         self.ver = 1
         self.ext = '.ma'
         scene = pmc.system.sceneName()
         if not path and scene:
             path = scene
         if not path and not scene:
-            log.warning("Unable to initialize SceneFile object from a new "
-                        "scene. Please specify a path.")
+            log.warning("Initialize with default properties.")
             return
         self.__init_from_path(path)
 
