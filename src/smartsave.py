@@ -125,7 +125,8 @@ class SmartSaveUI(QtWidgets.QDialog):
         default_folder = Path(cmds.workspace(rootDirectory=True, query=True))
         default_folder = default_folder / "scenes"
         self.folder_le = QtWidgets.QLineEdit(default_folder)
-        self.folder_browse_btn = QtWidgets.QPushButton("...")
+        # self.folder_browse_btn = QtWidgets.QPushButton("...")
+        self.folder_browse_btn = QtWidgets.QPushButton("Browse...")
         layout = QtWidgets.QHBoxLayout()
         layout.addWidget(self.folder_le)
         layout.addWidget(self.folder_browse_btn)
