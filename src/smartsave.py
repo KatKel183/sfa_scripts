@@ -122,10 +122,7 @@ class SmartSaveUI(QtWidgets.QDialog):
         return layout
 
     def _create_folder_ui(self):
-        default_folder = Path(cmds.workspace(rootDirectory=True, query=True))
-        default_folder = default_folder / "scenes"
-        self.folder_le = QtWidgets.QLineEdit(default_folder)
-        # self.folder_browse_btn = QtWidgets.QPushButton("...")
+        self.folder_le = QtWidgets.QLineEdit(self.scenefile.folder_path)
         self.folder_browse_btn = QtWidgets.QPushButton("Browse...")
         layout = QtWidgets.QHBoxLayout()
         layout.addWidget(self.folder_le)
@@ -147,7 +144,7 @@ class SceneFile(object):
         if not path and scene:
             path = scene
         if not path and not scene:
-            log.warning("Initialize with default properties.")
+            log.warning("Initialized with default properties.")
             return
         self.__init_from_path(path)
 
