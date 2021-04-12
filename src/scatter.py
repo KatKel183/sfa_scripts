@@ -1,4 +1,5 @@
 # import logging
+import random
 from PySide2 import QtWidgets, QtCore
 import maya.OpenMayaUI as omui
 import maya.cmds as cmds
@@ -34,15 +35,30 @@ for obj in selection:
 
 # --Selecting locations for scatter-object to scatter to
 selection = cmds.ls(orderedSelection=True, flatten=True)
-# This code selects all verts on an object:
+# lines 38-9 select all verts on an object:
 vtx_selection = cmds.polyListComponentConversion(selection, toVertex=True)
 vtx_selection = cmds.filterExpand(vtx_selection, selectionMask=31, expand=True)
-
+# line 40 selects or re-selects the vertices previously selected
 cmds.select(vtx_selection)
 
-# creating instances
+# -- selecting scale for scatter-object instances - how many variables?
+scale_min = user_input
+scale_max = user_input
 
-cmds.instance(variableGoesHere, name = rename)
+# scale variables
+size_x = random.uniform(1.0, 5.5)
+size_y = random.uniform(1.0, 5.5)
+size_z = random.uniform(1.0, 5.5)
+
+
+# -- selecting rotation for scatter-object instances
+# rotate_min_X = user_input
+# rotate_max_X = user_input
+
+# rotate variables
+# rotate_x = random.uniform(1.0, 5.5)
+# rotate_y = random.uniform(1.0, 5.5)
+# rotate_z = random.uniform(1.0, 5.5)
 
 # code that groups the instances
     # empty list so instances can be grouped
@@ -54,7 +70,8 @@ cmds.instance(variableGoesHere, name = rename)
         scattered_instances.extend(scatter_instance)
         # this code should include rotate and scale as well VV
         pos = cmds.xform([vtx], query=True, translation=True)
-        cmds.xform(scatter_instance, translation=pos)
+        cmds.xform(scatter_instance, translation=pos, scale=
+        [size_x, size_y, size_z])
     # group the instances -- arguments = list and a name for the list
     cmds.group(scattered_instances, name = "scattered")
 
