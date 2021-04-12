@@ -42,8 +42,8 @@ vtx_selection = cmds.filterExpand(vtx_selection, selectionMask=31, expand=True)
 cmds.select(vtx_selection)
 
 # -- selecting scale for scatter-object instances - how many variables?
-scale_min = user_input
-scale_max = user_input
+#scale_min = user_input
+#scale_max = user_input
 
 # scale variables
 size_x = random.uniform(1.0, 5.5)
@@ -54,11 +54,15 @@ size_z = random.uniform(1.0, 5.5)
 # -- selecting rotation for scatter-object instances
 # rotate_min_X = user_input
 # rotate_max_X = user_input
+# rotate_min_Y = user_input
+# rotate_max_Y = user_input
+# rotate_min_Z = user_input
+# rotate_max_Z = user_input
 
 # rotate variables
-# rotate_x = random.uniform(1.0, 5.5)
-# rotate_y = random.uniform(1.0, 5.5)
-# rotate_z = random.uniform(1.0, 5.5)
+rotate_x = random.uniform(0, 360)
+rotate_y = random.uniform(0, 360)
+rotate_z = random.uniform(0, 360)
 
 # code that groups the instances
     # empty list so instances can be grouped
@@ -70,8 +74,9 @@ size_z = random.uniform(1.0, 5.5)
         scattered_instances.extend(scatter_instance)
         # this code should include rotate and scale as well VV
         pos = cmds.xform([vtx], query=True, translation=True)
-        cmds.xform(scatter_instance, translation=pos, scale=
-        [size_x, size_y, size_z])
+        cmds.xform(scatter_instance, translation=pos,
+                   rotation=[rotate_x, rotate_y, rotate_z],
+                   scale=[size_x, size_y, size_z])
     # group the instances -- arguments = list and a name for the list
     cmds.group(scattered_instances, name = "scattered")
 
