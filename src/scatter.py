@@ -59,9 +59,20 @@ class ScatterUI(QtWidgets.QDialog):
         self.rx_max_sbx = QtWidgets.QSpinBox()
         self.rx_max_sbx.setButtonSymbols(QtWidgets.QAbstractSpinBox.PlusMinus)
         self.rx_max_sbx.setFixedWidth(100)
-        # might need to put more code in here
-        layout.addWidget(QtWidgets.QLabel("Rotate"), 1, 0)
-        layout.addWidget(self.scatter_object_le, 2, 0)
+        # matching labels to transformations
+        layout.addWidget(QtWidgets.QLabel("RotateX"), 2, 1)
+        layout.addWidget(QtWidgets.QLabel("RotateY"), 2, 2)
+        layout.addWidget(QtWidgets.QLabel("RotateZ"), 2, 3)
+        layout.addWidget(QtWidgets.QLabel("ScaleX"), 2, 4)
+        layout.addWidget(QtWidgets.QLabel("ScaleY"), 2, 5)
+        layout.addWidget(QtWidgets.QLabel("ScaleZ"), 2, 6)
+        # matching labels to min/max
+        layout.addWidget(QtWidgets.QLabel("min"), 3, 0)
+        layout.addWidget(QtWidgets.QLabel("max"), 4, 0)
+        # type info about scatter and destination objects
+        layout.addWidget(self.scatter_object_le, 0, 2)
+        layout.addWidget(self.destination_object_le, 0, 4)
+        # type info about transformations
         # definitely need to put a ton more code here
         return (layout)
 
@@ -74,9 +85,11 @@ class ScatterUI(QtWidgets.QDialog):
         self.rotate_header_lbl = QtWidgets.QLabel("Rotate")
         self.rotate_header_lbl.setStyleSheet("font: bold")
         layout = QtWidgets.QGridLayout()
+        # row 0
         layout.addWidget(self.scatter_header_lbl, 0, 0)
-        layout.addWidget(self.destination_header_lbl, 0, 2)
-        layout.addWidget(self.rotate_header_lbl, 0, 4)
+        layout.addWidget(self.destination_header_lbl, 0, 3)
+        # row 1
+        layout.addWidget(self.rotate_header_lbl, 1, 2)
         return (layout)
 
 # CLASS: create logic for program
