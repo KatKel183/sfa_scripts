@@ -36,17 +36,23 @@ class ScatterUI(QtWidgets.QDialog):
         self.title_lbl.setStyleSheet("font: bold 35px")
         # folder layout line
         self.transform_lay = self._create_transform_ui()
-        # button layout line
+        self.button_lay = self._create_button_ui()
         self.main_lay = QtWidgets.QVBoxLayout()
         self.main_lay.addWidget(self.title_lbl)
         # addLayout for folder layout
         self.main_lay.addLayout(self.transform_lay)
         self.main_lay.addStretch()
-        # addLayout button
+        self.main_lay.addLayout(self.button_lay)
         self.setLayout(self.main_lay)
 
     # def create_connections(self):
     #    """Connect our widget signals to slots"""
+
+    def _create_button_ui(self):
+        self.scatter_btn = QtWidgets.QPushButton("Scatter Objects")
+        layout = QtWidgets.QHBoxLayout()
+        layout.addWidget(self.scatter_btn)
+        return layout
 
     def _create_transform_ui(self):
         layout = self._create_transform_headers()
@@ -56,9 +62,36 @@ class ScatterUI(QtWidgets.QDialog):
         self.destination_object_le = QtWidgets.QLineEdit(
             self.scatter.destination_object)
         self.destination_object_le.setMinimumWidth(100)
-        self.rx_max_sbx = QtWidgets.QSpinBox()
-        self.rx_max_sbx.setButtonSymbols(QtWidgets.QAbstractSpinBox.PlusMinus)
-        self.rx_max_sbx.setFixedWidth(100)
+        # settings for rx spinboxes
+        self.rx_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rx_max_dsbx.setButtonSymbols(
+            QtWidgets.QAbstractSpinBox.PlusMinus)
+        self.rx_max_dsbx.setFixedWidth(100)
+        # settings for ry spinboxes
+        self.ry_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.ry_max_dsbx.setButtonSymbols(
+            QtWidgets.QAbstractSpinBox.PlusMinus)
+        self.ry_max_dsbx.setFixedWidth(100)
+        # settings for rz spinboxes
+        self.rz_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rz_max_dsbx.setButtonSymbols(
+            QtWidgets.QAbstractSpinBox.PlusMinus)
+        self.rz_max_dsbx.setFixedWidth(100)
+        # settings for sx spinboxes
+        self.sx_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.sx_max_dsbx.setButtonSymbols(
+            QtWidgets.QAbstractSpinBox.PlusMinus)
+        self.sx_max_dsbx.setFixedWidth(100)
+        # settings for sy spinboxes
+        self.sy_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.sy_max_dsbx.setButtonSymbols(
+            QtWidgets.QAbstractSpinBox.PlusMinus)
+        self.sy_max_dsbx.setFixedWidth(100)
+        # settings for sz spinboxes
+        self.sz_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.sz_max_dsbx.setButtonSymbols(
+            QtWidgets.QAbstractSpinBox.PlusMinus)
+        self.sz_max_dsbx.setFixedWidth(100)
         # matching labels to transformations
         layout.addWidget(QtWidgets.QLabel("RotateX"), 2, 1)
         layout.addWidget(QtWidgets.QLabel("RotateY"), 2, 2)
@@ -73,7 +106,15 @@ class ScatterUI(QtWidgets.QDialog):
         layout.addWidget(self.scatter_object_le, 0, 2)
         layout.addWidget(self.destination_object_le, 0, 4)
         # type info about transformations
+        layout.addWidget(self.scatter_object_le, 0, 2)
+        layout.addWidget(self.destination_object_le, 0, 4)
         # definitely need to put a ton more code here
+        layout.addWidget(self.rx_max_dsbx, 3, 1)
+        layout.addWidget(self.ry_max_dsbx, 3, 2)
+        layout.addWidget(self.rz_max_dsbx, 3, 3)
+        layout.addWidget(self.sx_max_dsbx, 3, 4)
+        layout.addWidget(self.sy_max_dsbx, 3, 5)
+        layout.addWidget(self.sz_max_dsbx, 3, 6)
         return (layout)
 
     def _create_transform_headers(self):
@@ -105,7 +146,7 @@ class Scatter(object):
         # call the stuff for rotations and scale
 
 
-    def transform_adjust(self):
+    def scale_and_rotate(self):
         # these should start out with un-transformed values
         sca_min_x = 1.0
         sca_max_x = 1.0
@@ -122,7 +163,7 @@ class Scatter(object):
         r_max_z = 0
 
     def transform_random(self):
-        # scale variables
+        # scale variables - replace hard-coded with user-input variables
         size_x = random.uniform(1.0, 5.5)
         size_y = random.uniform(1.0, 5.5)
         size_z = random.uniform(1.0, 5.5)
