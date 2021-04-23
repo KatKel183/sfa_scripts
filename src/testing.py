@@ -34,23 +34,10 @@ class ScatterUI(QtWidgets.QDialog):
     def create_ui(self):
         # vertical box layout
         self.main_layout = QtWidgets.QVBoxLayout
-        #visuals for the rotation boxes
-        self.rotation_y_min_dsbx = QtWidgets.QDoubleSpinBox()
-        self.rotation_y_min_dsbx.setMaximum(360)
-        self.rotation_y_max_dsbx = QtWidgets.QDoubleSpinBox()
-        self.rotation_y_max_dsbx.setMaximum(360)
         self.scatter_btn = QtWidgets.QPushButton("Scatter")
         # title for the box
         self.title_lbl = QtWidgets.QLabel("Scatter")
         self.title_lbl.setStyleSheet("font: bold 35px")
-        # layout for the other stuff.
-        self.transform_lay = self._create_transform_ui()
-        self.button_lay = self._create_button_ui()
-        self.main_lay = QtWidgets.QVBoxLayout()
-        self.main_lay.addWidget(self.title_lbl)
-        # rotation y
-        self.main_layout.addWidget(rotation_y_min_dsbx)
-        self.main_layout.addWidget(rotation_y_max_dsbx)
         # scatter button
         self.main_layout.addWidget(self.scatter_btn)
         self.setLayout(self.main_layout)
@@ -59,7 +46,7 @@ class ScatterUI(QtWidgets.QDialog):
         self.scatter_btn.clicked.connect(self.scatter)
 
     @QtCore.Slot()
-    def scatter_slot(self):
+    def scatter(self):
         self.scatter = Scatter()
         self._set_values_from_ui()
         self.scatter.create_instances()
@@ -77,11 +64,6 @@ class Scatter(object):
     def __init__(self):
         self.rotation_min = [0, 0, 0]
         self.rotation_max = [360, 360, 360]
-        # self.scale_min = [1, 1, 1]
-        # self.scale_max = [20, 20, 20]
-        # source and destination
-        self.scatter_object = 'pCube1'
-        self.destination_object = self.vert_selection()
 
     def vert_selection(self):
         # --Selecting locations for scatter-object to scatter to
@@ -113,12 +95,3 @@ class Scatter(object):
             #self.rand_scale()
     # group the instances -- arguments = list and a name for the list
         cmds.group(scattered_instances, name="scattered")
-
-    def rand_rotation(self, scatter_instance):
-        # [1] is for y
-        random_y = random.randrange(self.rotation_min[1], self.rotation_max[1])
-        cmds.setAttr(scatter_instance + '.rotateY', random_y)
-
-    def scale_rotation(self, scatter_instance):
-        #random_y = random.randscale(self.scale_min[1], self.scale_max[1])
-        #cmds.setAttr(scatter_instance + '.scaleY', random_y)
