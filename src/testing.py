@@ -30,16 +30,17 @@ class ScatterUI(QtWidgets.QDialog):
 
         self.title_lbl = QtWidgets.QLabel("Scatter Tool")
         self.title_lbl.setStyleSheet("font: bold 35px")
+
+        self.header_lay = self._create_ui_headers()
+        # ** self.textbox_lay = self._create_ui_textboxes()
         # !-! extract following four lines
-        self.rotation_y_min_dsbx = QtWidgets.QDoubleSpinBox()
-        self.rotation_y_min_dsbx.setMaximum(360)
-        self.rotation_y_max_dsbx = QtWidgets.QDoubleSpinBox()
-        self.rotation_y_max_dsbx.setMaximum(360)
+        self.rotate_dsbxes()
 
         self.scatter_btn = QtWidgets.QPushButton("Scatter Objects")
         # ** self.main_layout = QtWidgets.QHBoxLayout()
         self.main_layout.addWidget(self.title_lbl)
-
+        self.main_layout.addLayout(self.header_lay)
+        # ** self.main_layout.addWidget(self.textbox_lay)
         # !-! extract following two lines - transform ui
         self.main_layout.addWidget(self.rotation_y_min_dsbx)
         self.main_layout.addWidget(self.rotation_y_max_dsbx)
@@ -48,6 +49,47 @@ class ScatterUI(QtWidgets.QDialog):
         # ** self.main_layout = QtWidgets.QVBoxLayout()
         self.main_layout.addStretch()
         self.setLayout(self.main_layout)
+
+    def rotate_dsbxes(self):
+        self.rotation_y_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rotation_y_min_dsbx.setMaximum(360)
+        self.rotation_y_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rotation_y_max_dsbx.setMaximum(360)
+
+    def _create_ui_textboxes(self):
+        layout = self._create_ui_headers()
+        self.scatter_object_le = QtWidgets.QLineEdit(
+            self.scatter_slot.scatter_source_object)
+        self.scatter_object_le.setMinimumWidth(100)
+        self.destination_object_le = QtWidgets.QListWidget(
+            self.scatter_slot.scatter_where_selected)
+        self.destination_object_le.setMinimumWidth(100)
+
+        layout.addWidget(self.scatter_object_le, 0, 2)
+        layout.addWidget(self.destination_object_le, 0, 4)
+        # rotate dsbxes
+        # scale dsbxes
+        # display transform headers & min max headers
+        # display transform spinboxes
+        return(layout)
+
+    def _create_ui_headers(self):
+        self.scatter_header_lbl = QtWidgets.QLabel("Choose Source Object: ")
+        self.scatter_header_lbl.setStyleSheet("font:bold")
+        self.destination_header_lbl = QtWidgets.QLabel(
+            "Choose Object/Vertices to Scatter To")
+        self.destination_header_lbl.setStyleSheet("font:bold")
+        self.rotate_header_lbl = QtWidgets.QLabel("Rotate")
+        self.rotate_header_lbl.setStyleSheet("font: bold")
+        self.scale_header_lbl = QtWidgets.QLabel("Scale")
+        self.scale_header_lbl.setStyleSheet("font: bold")
+        layout = QtWidgets.QGridLayout()
+        layout.addWidget(self.scatter_header_lbl, 0, 0)
+        layout.addWidget(self.destination_header_lbl, 0, 3)
+        layout.addWidget(self.rotate_header_lbl, 1, 2)
+        layout.addWidget(self.scale_header_lbl, 1, 5)
+        return (layout)
+
 
     def create_connections(self):
         self.scatter_btn.clicked.connect(self._scatter_slot)
@@ -70,8 +112,8 @@ class Scatter(object):
         self.rotation_max = [360, 360, 360]
         # self.scale_min = [0, 0, 0]
         # self.scale_max = [360, 360, 360]
-        # self.scatter_source_object = 'pCube1'
-        # self.destination_object = self.vert_selection()
+        self.scatter_source_object = 'pCube1'
+        self.scatter_where_selected = []
 
     def vert_selection(self):
         selection = cmds.ls(orderedSelection=True, flatten=True)
@@ -83,14 +125,14 @@ class Scatter(object):
         return vtx_selection
 
     def create_instances(self):
-        scatter_source_object = 'pCube1'
         scattered_instances = []
         for vtx in self.vert_selection():
+            self.scatter_where_selected.append(vtx)
             pos = cmds.pointPosition(vtx)
-            scatter_instance = cmds.instance(scatter_source_object,
+            scatter_instance = cmds.instance(self.scatter_source_object,
                                              name="scatter_1")
             scattered_instances.extend(scatter_instance)
-            cmds.move(pos[0], pos[1], pos[2], scatter_source_object,
+            cmds.move(pos[0], pos[1], pos[2], self.scatter_source_object,
                       worldSpace=True)
             self.rand_rotation(scatter_instance[0])
         cmds.group(scattered_instances, name="scattered")
