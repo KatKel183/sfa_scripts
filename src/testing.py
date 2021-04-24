@@ -14,6 +14,7 @@ class ScatterUI(QtWidgets.QDialog):
 
     def __init__(self):
         super(ScatterUI, self).__init__(parent=maya_main_window())
+        self.scatter_slot = Scatter()
         self.setWindowTitle("Scatter Tool")
         self.setMinimumWidth(750)
         self.setMaximumHeight(350)
@@ -29,28 +30,23 @@ class ScatterUI(QtWidgets.QDialog):
 
         self.title_lbl = QtWidgets.QLabel("Scatter Tool")
         self.title_lbl.setStyleSheet("font: bold 35px")
-
+        # !-! extract following four lines
         self.rotation_y_min_dsbx = QtWidgets.QDoubleSpinBox()
         self.rotation_y_min_dsbx.setMaximum(360)
         self.rotation_y_max_dsbx = QtWidgets.QDoubleSpinBox()
-        self.rotation_y_min_dsbx.setMaximum(360)
+        self.rotation_y_max_dsbx.setMaximum(360)
 
         self.scatter_btn = QtWidgets.QPushButton("Scatter Objects")
         # ** self.main_layout = QtWidgets.QHBoxLayout()
-
         self.main_layout.addWidget(self.title_lbl)
+
+        # !-! extract following two lines - transform ui
         self.main_layout.addWidget(self.rotation_y_min_dsbx)
         self.main_layout.addWidget(self.rotation_y_max_dsbx)
-        self.main_layout.addWidget(self.scatter_btn)
-
-        # create transform ui
-        # create button ui??
-        # ** self.main_layout = QtWidgets.QVBoxLayout()
-
         # display create transform ui
+        self.main_layout.addWidget(self.scatter_btn)
+        # ** self.main_layout = QtWidgets.QVBoxLayout()
         self.main_layout.addStretch()
-        # display create button ui
-
         self.setLayout(self.main_layout)
 
     def create_connections(self):
@@ -58,11 +54,13 @@ class ScatterUI(QtWidgets.QDialog):
 
     @QtCore.Slot()
     def _scatter_slot(self):
-        scatter_slot = Scatter()
+        self._set_values_from_ui()
         # !-! extract the .rotation into its own method
-        scatter_slot.rotation_min[1] = self.rotation_y_min_dsbx.value()
-        scatter_slot.rotation_max[1] = self.rotation_y_max_dsbx.value()
-        scatter_slot.create_instances()
+        self.scatter_slot.create_instances()
+
+    def _set_values_from_ui(self):
+        self.scatter_slot.rotation_min[1] = self.rotation_y_min_dsbx.value()
+        self.scatter_slot.rotation_max[1] = self.rotation_y_max_dsbx.value()
 
 
 class Scatter(object):
@@ -71,7 +69,7 @@ class Scatter(object):
         self.rotation_min = [0, 0, 0]
         self.rotation_max = [360, 360, 360]
         # self.scale_min = [0, 0, 0]
-        # self.rotation_max = [360, 360, 360]
+        # self.scale_max = [360, 360, 360]
         # self.scatter_source_object = 'pCube1'
         # self.destination_object = self.vert_selection()
 
@@ -94,6 +92,7 @@ class Scatter(object):
             scattered_instances.extend(scatter_instance)
             cmds.move(pos[0], pos[1], pos[2], scatter_source_object,
                       worldSpace=True)
+            self.rand_rotation(scatter_instance[0])
         cmds.group(scattered_instances, name="scattered")
 
     def rand_rotation(self, scatter_instance):
