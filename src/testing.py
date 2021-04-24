@@ -1,97 +1,98 @@
-# import logging
 import random
+
 from PySide2 import QtWidgets, QtCore
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 import maya.cmds as cmds
-import pymel.core as pmc
-from pymel.core.system import Path
-
-# log = logging.getLogger(__name__)
-
 
 def maya_main_window():
     """Return the maya main window widget"""
     main_window = omui.MQtUtil.mainWindow()
     return wrapInstance(long(main_window), QtWidgets.QWidget)
 
-
 class ScatterUI(QtWidgets.QDialog):
 
     def __init__(self):
         super(ScatterUI, self).__init__(parent=maya_main_window())
-        self.scatter = Scatter()
         self.setWindowTitle("Scatter Tool")
-        # The pixel settings are adjusted for my computer resolution
         self.setMinimumWidth(750)
         self.setMaximumHeight(350)
         self.setWindowFlags(self.windowFlags() ^
                             QtCore.Qt.WindowContextHelpButtonHint)
-        self.scatter = Scatter()
+        # scatter connection goes in further down
         self.create_ui()
         self.create_connections()
 
+    # self.scatter = Scatter()
     def create_ui(self):
-        # vertical box layout
         self.main_layout = QtWidgets.QVBoxLayout
-        self.scatter_btn = QtWidgets.QPushButton("Scatter")
-        # title for the box
+
+        self.rotation_y_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rotation_y_min_dsbx.setMaximum(360)
+        self.rotation_y_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rotation_y_min_dsbx.setMaximum(360)
+        self.scatter_btn = QtWidgets.QPushButton("Scatter Tool")
+
         self.title_lbl = QtWidgets.QLabel("Scatter")
         self.title_lbl.setStyleSheet("font: bold 35px")
-        # scatter button
+
+        self.main_layout.addWidget(self.rotation_y_min_sbx)
+        self.main_layout.addWidget(self.rotation_y_max_sbx)
         self.main_layout.addWidget(self.scatter_btn)
-        self.setLayout(self.main_layout)
+
+        # create transform ui
+        # create button ui??
+        self.main_layout.addWidget(self.title_Lbl)
+        # display create transform ui
+        self.main_laout.addStretch()
+        # display create button ui
+
+        self.set_layout(self.main_layout)
 
     def create_connections(self):
-        self.scatter_btn.clicked.connect(self.scatter)
+        self.scatter_btn.clicked.connect(self._scatter_slot)
 
     @QtCore.Slot()
-    def scatter(self):
-        self.scatter = Scatter()
-        self._set_values_from_ui()
-        self.scatter.create_instances()
-
-    def _set_values_from_ui(self):
-        self.scatter_slot.rotation_min[1] = self.rotation_y_min_dsbx.value()
-        self.scatter_slot.rotation_max[1] = self.rotation_y_max_dsbx.value()
-
+    def _scatter_slot(self):
+        scatter_slot = Scatter()
+        # !-! extract the .rotation into its own method
+        scatter_slot.rotation_min[1] = self.rotation_y_min_dsbx.value()
+        scatter_slot.rotation_max[1] = self.rotation_y_max_dsbx.value()
+        scatter_slot.create_instances()
 
 
 class Scatter(object):
-    """Representation of a Scatter program"""
 
-    # the init has the defaults
     def __init__(self):
         self.rotation_min = [0, 0, 0]
         self.rotation_max = [360, 360, 360]
+        # self.scale_min = [0, 0, 0]
+        # self.rotation_max = [360, 360, 360]
+        # self.scatter_source_object = 'pCube1'
+        # self.destination_object = self.vert_selection()
 
     def vert_selection(self):
-        # --Selecting locations for scatter-object to scatter to
         selection = cmds.ls(orderedSelection=True, flatten=True)
-        # select all verts on an object:
         vtx_selection = cmds.polyListComponentConversion(selection,
                                                          toVertex=True)
-        vtx_selection = cmds.filterExpand(vtx_selection, selectionMask=31)
-        # selects or re-selects the vertices previously selected
+        vtx_selection = cmds.filterExpand(vtx_selection, selectionMask=31,
+                                          expand=True)
         cmds.select(vtx_selection)
         return vtx_selection
 
     def create_instances(self):
         scatter_source_object = 'pCube1'
         scattered_instances = []
-
         for vtx in self.vert_selection():
-            # rewrite based on prof's code
-            pos = cmds.pointPosition(vert)
+            pos = cmds.pointPosition(vtx)
             scatter_instance = cmds.instance(scatter_source_object,
                                              name="scatter_1")
-            cmds.move(pos[0], pos[1], pos[2], scatter_instance,
-                      worldSpace=True)
-
             scattered_instances.extend(scatter_instance)
-            pos = cmds.xform([vtx], query=True, translation=True,
-                             worldSpace=True)
-            self.rand_rotation()
-            #self.rand_scale()
-    # group the instances -- arguments = list and a name for the list
+            cmds.move(pos[0], pos[1], pos[2], scatter_source_object,
+                      worldSpace=True)
         cmds.group(scattered_instances, name="scattered")
+
+    def rand_rotation(self, scatter_instance):
+        # [1] is for y
+        random_y = random.randrange(self.rotation_min[1], self.rotation_max[1])
+        cmds.setAttr(scatter_instance + '.rotateY', random_y)
