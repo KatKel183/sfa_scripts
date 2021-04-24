@@ -25,29 +25,32 @@ class ScatterUI(QtWidgets.QDialog):
 
     # self.scatter = Scatter()
     def create_ui(self):
-        self.main_layout = QtWidgets.QVBoxLayout
+        self.main_layout = QtWidgets.QVBoxLayout()
 
         self.rotation_y_min_dsbx = QtWidgets.QDoubleSpinBox()
         self.rotation_y_min_dsbx.setMaximum(360)
         self.rotation_y_max_dsbx = QtWidgets.QDoubleSpinBox()
         self.rotation_y_min_dsbx.setMaximum(360)
-        self.scatter_btn = QtWidgets.QPushButton("Scatter Tool")
+
+        self.main_layout.addWidget(self.rotation_y_min_dsbx)
+        self.main_layout.addWidget(self.rotation_y_max_dsbx)
+
+        self.scatter_btn = QtWidgets.QPushButton("Scatter Objects")
+        self.main_layout = QtWidgets.QHBoxLayout()
+        self.main_layout.addWidget(self.scatter_btn)
 
         self.title_lbl = QtWidgets.QLabel("Scatter")
         self.title_lbl.setStyleSheet("font: bold 35px")
 
-        self.main_layout.addWidget(self.rotation_y_min_sbx)
-        self.main_layout.addWidget(self.rotation_y_max_sbx)
-        self.main_layout.addWidget(self.scatter_btn)
-
         # create transform ui
         # create button ui??
-        self.main_layout.addWidget(self.title_Lbl)
+        self.main_layout = QtWidgets.QVBoxLayout()
+        self.main_layout.addWidget(self.title_lbl)
         # display create transform ui
-        self.main_laout.addStretch()
+        self.main_layout.addStretch()
         # display create button ui
 
-        self.set_layout(self.main_layout)
+        self.setLayout(self.main_layout)
 
     def create_connections(self):
         self.scatter_btn.clicked.connect(self._scatter_slot)
