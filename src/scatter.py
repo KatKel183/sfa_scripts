@@ -20,63 +20,49 @@ class ScatterUI(QtWidgets.QDialog):
         self.setMaximumHeight(350)
         self.setWindowFlags(self.windowFlags() ^
                             QtCore.Qt.WindowContextHelpButtonHint)
-        # scatter connection goes in further down
         self.create_ui()
         self.create_connections()
 
-    # self.scatter = Scatter()
     def create_ui(self):
         self.main_layout = QtWidgets.QVBoxLayout()
 
         self.title_lbl = QtWidgets.QLabel("Scatter Tool")
         self.title_lbl.setStyleSheet("font: bold 35px")
 
-        self.header_lay = self._create_ui_headers()
-        # ** self.textbox_lay = self._create_ui_textboxes()
-        self.rotate_dsbxes()
-        # ** self.scale_dsbxes()
+        self.input_layout = self._create_input_layout()
+
         self.scatter_btn = QtWidgets.QPushButton("Scatter Objects")
-        # ** self.main_layout = QtWidgets.QHBoxLayout()
+
         self.main_layout.addWidget(self.title_lbl)
-        self.main_layout.addLayout(self.header_lay)
-        # ** self.main_layout.addWidget(self.textbox_lay)
-        # !-! extract following two lines - transform ui
-        self.main_layout.addWidget(self.rotation_y_min_dsbx)
-        self.main_layout.addWidget(self.rotation_y_max_dsbx)
-        # display create transform ui
+        self.main_layout.addLayout(self.input_layout)
         self.main_layout.addWidget(self.scatter_btn)
-        # ** self.main_layout = QtWidgets.QVBoxLayout()
+
         self.main_layout.addStretch()
         self.setLayout(self.main_layout)
 
-    def scale_dsbxes(self):
-        self.scale_y_min_dsbx = QtWidgets.QDoubleSpinBox()
-        self.scale_y_min_dsbx.setMinimum(1)
-        self.scale_y_max_dsbx = QtWidgets.QDoubleSpinBox()
-        self.scale_y_max_dsbx.setMinimum(1)
-
-    def rotate_dsbxes(self):
-        self.rotation_y_min_dsbx = QtWidgets.QDoubleSpinBox()
-        self.rotation_y_min_dsbx.setMaximum(360)
-        self.rotation_y_max_dsbx = QtWidgets.QDoubleSpinBox()
-        self.rotation_y_max_dsbx.setMaximum(360)
-
-    def _create_ui_textboxes(self):
+    def _create_input_layout(self):
         layout = self._create_ui_headers()
-        self.scatter_object_le = QtWidgets.QLineEdit(
-            self.scatter_slot.scatter_source_object)
-        self.scatter_object_le.setMinimumWidth(100)
-        self.destination_object_le = QtWidgets.QListWidget(
-            self.scatter_slot.scatter_where_selected)
-        self.destination_object_le.setMinimumWidth(100)
+        # ** self.textbox_lay = self._create_ui_textboxes()
+        self.rotate_dsbxes()
+        # ** self.scale_dsbxes()
+        self._create_dsbx_headers(layout)
 
-        layout.addWidget(self.scatter_object_le, 0, 2)
-        layout.addWidget(self.destination_object_le, 0, 4)
-        # rotate dsbxes
-        # scale dsbxes
-        # display transform headers & min max headers
-        # display transform spinboxes
-        return(layout)
+        # ** self.main_layout.addWidget(self.textbox_lay)
+        self.display_dsbxes(layout)
+
+        return layout
+
+    def _create_dsbx_headers(self, layout):
+        layout.addWidget(QtWidgets.QLabel("RotateX"), 2, 1)
+        layout.addWidget(QtWidgets.QLabel("RotateY"), 2, 2)
+        layout.addWidget(QtWidgets.QLabel("RotateZ"), 2, 3)
+        layout.addWidget(QtWidgets.QLabel("ScaleX"), 2, 4)
+        layout.addWidget(QtWidgets.QLabel("ScaleY"), 2, 5)
+        layout.addWidget(QtWidgets.QLabel("ScaleZ"), 2, 6)
+        # matching labels to min/max
+        layout.addWidget(QtWidgets.QLabel("min"), 3, 0)
+        layout.addWidget(QtWidgets.QLabel("max"), 4, 0)
+        return layout
 
     def _create_ui_headers(self):
         self.scatter_header_lbl = QtWidgets.QLabel("Choose Source Object: ")
@@ -95,6 +81,52 @@ class ScatterUI(QtWidgets.QDialog):
         layout.addWidget(self.scale_header_lbl, 1, 5)
         return (layout)
 
+    def _create_ui_textboxes(self):
+        layout = self._create_ui_headers()
+        self.scatter_object_le = QtWidgets.QLineEdit(
+            self.scatter_slot.scatter_source_object)
+        self.scatter_object_le.setMinimumWidth(100)
+        self.destination_object_le = QtWidgets.QListWidget(
+            self.scatter_slot.scatter_where_selected)
+        self.destination_object_le.setMinimumWidth(100)
+
+        layout.addWidget(self.scatter_object_le, 0, 2)
+        layout.addWidget(self.destination_object_le, 0, 5)
+        return(layout)
+
+    def rotate_dsbxes(self):
+        self.rotation_x_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rotation_x_min_dsbx.setMaximum(360)
+        self.rotation_x_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rotation_x_max_dsbx.setMaximum(360)
+
+        self.rotation_y_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rotation_y_min_dsbx.setMaximum(360)
+        self.rotation_y_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rotation_y_max_dsbx.setMaximum(360)
+
+        self.rotation_z_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rotation_z_min_dsbx.setMaximum(360)
+        self.rotation_z_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rotation_z_max_dsbx.setMaximum(360)
+
+    def scale_dsbxes(self):
+        self.scale_y_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.scale_y_min_dsbx.setMinimum(1)
+        self.scale_y_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.scale_y_max_dsbx.setMinimum(1)
+
+    def display_dsbxes(self, layout):
+        layout = QtWidgets.QGridLayout()
+        layout.addWidget(self.rotation_x_min_dsbx, 3, 1)
+        layout.addWidget(self.rotation_x_max_dsbx, 4, 1)
+        layout.addWidget(self.rotation_y_min_dsbx, 3, 2)
+        layout.addWidget(self.rotation_y_max_dsbx, 4, 2)
+        layout.addWidget(self.rotation_z_min_dsbx, 3, 3)
+        layout.addWidget(self.rotation_z_max_dsbx, 4, 3)
+        # self.main_layout.addWidget(self.rotation_y_min_dsbx, 3, 2)
+        # self.main_layout.addWidget(self.rotation_y_max_dsbx, 4, 2)
+        return layout
 
     def create_connections(self):
         self.scatter_btn.clicked.connect(self._scatter_slot)
