@@ -142,7 +142,6 @@ class ScatterUI(QtWidgets.QDialog):
     @QtCore.Slot()
     def _scatter_slot(self):
         self._set_values_from_ui()
-        # !-! extract the .rotation into its own method
         self.scatter_slot.create_instances()
 
     def _set_values_from_ui(self):
@@ -166,7 +165,7 @@ class Scatter(object):
     def __init__(self):
         self.rotation_min = [0, 0, 0]
         self.rotation_max = [360, 360, 360]
-        self.scale_min = [0, 0, 0]
+        self.scale_min = [0.1, 0.1, 0.1]
         self.scale_max = [10, 10, 10]
         self.scatter_source_object = 'pCube1'
         self.scatter_where_selected = []
@@ -205,11 +204,11 @@ class Scatter(object):
         cmds.setAttr(scatter_instance + '.rotateZ', random_z)
 
     def rand_scale(self, scatter_instance):
-        scale_x = random.randrange(self.scale_min[0], self.scale_max[0])
+        scale_x = random.uniform(self.scale_min[0], self.scale_max[0])
         cmds.setAttr(scatter_instance + '.scaleX', scale_x)
 
-        scale_y = random.randrange(self.scale_min[1], self.scale_max[1])
+        scale_y = random.uniform(self.scale_min[1], self.scale_max[1])
         cmds.setAttr(scatter_instance + '.scaleY', scale_y)
 
-        scale_z = random.randrange(self.scale_min[2], self.scale_max[2])
+        scale_z = random.uniform(self.scale_min[2], self.scale_max[2])
         cmds.setAttr(scatter_instance + '.scaleZ', scale_z)
