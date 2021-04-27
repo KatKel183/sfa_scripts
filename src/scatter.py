@@ -34,6 +34,7 @@ class ScatterUI(QtWidgets.QDialog):
         self.scatter_btn = QtWidgets.QPushButton("Scatter Objects")
 
         self.main_layout.addWidget(self.title_lbl)
+        # self.main_layout.addLayout(self.textbox_lay)
         self.main_layout.addLayout(self.input_layout)
         self.main_layout.addWidget(self.scatter_btn)
 
@@ -42,12 +43,10 @@ class ScatterUI(QtWidgets.QDialog):
 
     def _create_input_layout(self):
         layout = self._create_ui_headers()
-        # ** self.textbox_lay = self._create_ui_textboxes()
+
         self.rotate_dsbxes()
         self.scale_dsbxes()
         self._create_dsbx_headers(layout)
-
-        # ** self.main_layout.addWidget(self.textbox_lay)
 
         return layout
 
@@ -88,25 +87,21 @@ class ScatterUI(QtWidgets.QDialog):
         self.rotate_header_lbl.setStyleSheet("font: bold")
         self.scale_header_lbl = QtWidgets.QLabel("Scale")
         self.scale_header_lbl.setStyleSheet("font: bold")
-        layout = QtWidgets.QGridLayout()
-        layout.addWidget(self.scatter_header_lbl, 0, 0)
-        layout.addWidget(self.destination_header_lbl, 0, 3)
-        layout.addWidget(self.rotate_header_lbl, 1, 2)
-        layout.addWidget(self.scale_header_lbl, 1, 5)
-        return (layout)
 
-    def _create_ui_textboxes(self):
-        layout = self._create_ui_headers()
         self.scatter_object_le = QtWidgets.QLineEdit(
             self.scatter_slot.scatter_source_object)
         self.scatter_object_le.setMinimumWidth(100)
-        self.destination_object_le = QtWidgets.QListWidget(
-            self.scatter_slot.scatter_where_selected)
-        self.destination_object_le.setMinimumWidth(100)
+        self.destination_object_le = QtWidgets.QLineEdit()
+        self.destination_object_le.setMinimumWidth(50)
 
+        layout = QtWidgets.QGridLayout()
+        layout.addWidget(self.scatter_header_lbl, 0, 0)
         layout.addWidget(self.scatter_object_le, 0, 2)
+        layout.addWidget(self.destination_header_lbl, 0, 3)
         layout.addWidget(self.destination_object_le, 0, 5)
-        return(layout)
+        layout.addWidget(self.rotate_header_lbl, 1, 2)
+        layout.addWidget(self.scale_header_lbl, 1, 5)
+        return (layout)
 
     def rotate_dsbxes(self):
         self.rotation_x_min_dsbx = QtWidgets.QDoubleSpinBox()
