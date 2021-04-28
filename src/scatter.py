@@ -123,13 +123,19 @@ class ScatterUI(QtWidgets.QDialog):
 
     def scale_dsbxes(self):
         self.scale_x_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.scale_x_min_dsbx.setMinimum(0.01)
         self.scale_x_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.scale_x_max_dsbx.setMinimum(0.01)
 
         self.scale_y_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.scale_y_min_dsbx.setMinimum(0.01)
         self.scale_y_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.scale_y_max_dsbx.setMinimum(0.01)
 
         self.scale_z_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.scale_z_min_dsbx.setMinimum(0.01)
         self.scale_z_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.scale_z_max_dsbx.setMinimum(0.01)
 
     def create_connections(self):
         self.scatter_btn.clicked.connect(self._scatter_slot)
@@ -160,7 +166,7 @@ class Scatter(object):
     def __init__(self):
         self.rotation_min = [0, 0, 0]
         self.rotation_max = [360, 360, 360]
-        self.scale_min = [0.1, 0.1, 0.1]
+        self.scale_min = [1, 1, 1]
         self.scale_max = [10, 10, 10]
         self.scatter_source_object = 'pCube1'
         self.scatter_where_selected = []
@@ -189,16 +195,32 @@ class Scatter(object):
         cmds.group(scattered_instances, name="scattered")
 
     def rand_rotation(self, scatter_instance):
-        random_x = random.randrange(self.rotation_min[0], self.rotation_max[0])
-        cmds.setAttr(scatter_instance + '.rotateX', random_x)
+        try:
+            random_x = random.randrange(self.rotation_min[0],
+                                        self.rotation_max[0])
+            cmds.setAttr(scatter_instance + '.rotateX', random_x)
+        except ValueError:
+            random_x = self.rotation_min[0]
+            cmds.setAttr(scatter_instance + '.rotateX', random_x)
 
-        random_y = random.randrange(self.rotation_min[1], self.rotation_max[1])
-        cmds.setAttr(scatter_instance + '.rotateY', random_y)
+        try:
+            random_y = random.randrange(self.rotation_min[1],
+                                        self.rotation_max[1])
+            cmds.setAttr(scatter_instance + '.rotateY', random_y)
+        except ValueError:
+            random_y = self.rotation_min[1]
+            cmds.setAttr(scatter_instance + '.rotateY', random_y)
 
-        random_z = random.randrange(self.rotation_min[2], self.rotation_max[2])
-        cmds.setAttr(scatter_instance + '.rotateZ', random_z)
+        try:
+            random_z = random.randrange(self.rotation_min[2],
+                                        self.rotation_max[2])
+            cmds.setAttr(scatter_instance + '.rotateZ', random_z)
+        except ValueError:
+            random_z = self.rotation_min[2]
+            cmds.setAttr(scatter_instance + '.rotateZ', random_z)
 
     def rand_scale(self, scatter_instance):
+        # if self.scale_min[0] is 0 and self.scale_max[0] is
         scale_x = random.uniform(self.scale_min[0], self.scale_max[0])
         cmds.setAttr(scatter_instance + '.scaleX', scale_x)
 
