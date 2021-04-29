@@ -172,6 +172,7 @@ class Scatter(object):
         self.rotation_max = [360, 360, 360]
         self.scale_min = [1, 1, 1]
         self.scale_max = [10, 10, 10]
+        # Neither of these are editable in the GUI
         self.scatter_source_object = 'pCube1'
         self.scatter_where_selected = []
 
