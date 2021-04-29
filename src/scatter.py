@@ -1,9 +1,13 @@
+import logging
+
 import random
 
 from PySide2 import QtWidgets, QtCore
 from shiboken2 import wrapInstance
 import maya.OpenMayaUI as omui
 import maya.cmds as cmds
+
+log = logging.getLogger(__name__)
 
 def maya_main_window():
     """Return the maya main window widget"""
@@ -85,7 +89,7 @@ class ScatterUI(QtWidgets.QDialog):
         self.destination_header_lbl.setStyleSheet("font:bold")
         self.rotate_header_lbl = QtWidgets.QLabel("Rotate")
         self.rotate_header_lbl.setStyleSheet("font: bold")
-        self.scale_header_lbl = QtWidgets.QLabel("Scale")
+        self.scale_header_lbl = QtWidgets.QLabel("Scale (default is 1)")
         self.scale_header_lbl.setStyleSheet("font: bold")
 
         self.scatter_object_le = QtWidgets.QLineEdit(
@@ -123,19 +127,19 @@ class ScatterUI(QtWidgets.QDialog):
 
     def scale_dsbxes(self):
         self.scale_x_min_dsbx = QtWidgets.QDoubleSpinBox()
-        self.scale_x_min_dsbx.setMinimum(0.01)
+        self.scale_x_min_dsbx.setMinimum(0.1)
         self.scale_x_max_dsbx = QtWidgets.QDoubleSpinBox()
-        self.scale_x_max_dsbx.setMinimum(0.01)
+        self.scale_x_max_dsbx.setMinimum(0.1)
 
         self.scale_y_min_dsbx = QtWidgets.QDoubleSpinBox()
-        self.scale_y_min_dsbx.setMinimum(0.01)
+        self.scale_y_min_dsbx.setMinimum(0.1)
         self.scale_y_max_dsbx = QtWidgets.QDoubleSpinBox()
-        self.scale_y_max_dsbx.setMinimum(0.01)
+        self.scale_y_max_dsbx.setMinimum(0.1)
 
         self.scale_z_min_dsbx = QtWidgets.QDoubleSpinBox()
-        self.scale_z_min_dsbx.setMinimum(0.01)
+        self.scale_z_min_dsbx.setMinimum(0.1)
         self.scale_z_max_dsbx = QtWidgets.QDoubleSpinBox()
-        self.scale_z_max_dsbx.setMinimum(0.01)
+        self.scale_z_max_dsbx.setMinimum(0.1)
 
     def create_connections(self):
         self.scatter_btn.clicked.connect(self._scatter_slot)
@@ -170,6 +174,7 @@ class Scatter(object):
         self.scale_max = [10, 10, 10]
         self.scatter_source_object = 'pCube1'
         self.scatter_where_selected = []
+
 
     def vert_selection(self):
         selection = cmds.ls(orderedSelection=True, flatten=True)
@@ -220,7 +225,6 @@ class Scatter(object):
             cmds.setAttr(scatter_instance + '.rotateZ', random_z)
 
     def rand_scale(self, scatter_instance):
-        # if self.scale_min[0] is 0 and self.scale_max[0] is
         scale_x = random.uniform(self.scale_min[0], self.scale_max[0])
         cmds.setAttr(scatter_instance + '.scaleX', scale_x)
 
