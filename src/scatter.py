@@ -51,6 +51,8 @@ class ScatterUI(QtWidgets.QDialog):
         self.rotate_dsbxes()
         self.scale_dsbxes()
         self._create_dsbx_headers(layout)
+        self._create_selection_headers(layout)
+        self._create_transform_headers(layout)
 
         return layout
 
@@ -86,11 +88,6 @@ class ScatterUI(QtWidgets.QDialog):
         self.scatter_header_lbl.setStyleSheet("font:bold")
         self.destination_header_lbl = QtWidgets.QLabel(
             "Choose Object/Vertices to Scatter To")
-        self.destination_header_lbl.setStyleSheet("font:bold")
-        self.rotate_header_lbl = QtWidgets.QLabel("Rotate")
-        self.rotate_header_lbl.setStyleSheet("font: bold")
-        self.scale_header_lbl = QtWidgets.QLabel("Scale (default is 1)")
-        self.scale_header_lbl.setStyleSheet("font: bold")
 
         self.scatter_object_le = QtWidgets.QLineEdit(
             self.scatter_slot.scatter_source_object)
@@ -101,11 +98,25 @@ class ScatterUI(QtWidgets.QDialog):
         layout = QtWidgets.QGridLayout()
         layout.addWidget(self.scatter_header_lbl, 0, 0)
         layout.addWidget(self.scatter_object_le, 0, 2)
+        return (layout)
+
+    def _create_transform_headers(self, layout):
+        self.destination_header_lbl.setStyleSheet("font:bold")
+        self.rotate_header_lbl = QtWidgets.QLabel("Rotate")
+        self.rotate_header_lbl.setStyleSheet("font: bold")
+        self.scale_header_lbl = QtWidgets.QLabel("Scale (default is 1)")
+        self.scale_header_lbl.setStyleSheet("font: bold")
+
         layout.addWidget(self.destination_header_lbl, 0, 3)
         layout.addWidget(self.destination_object_le, 0, 5)
         layout.addWidget(self.rotate_header_lbl, 1, 2)
         layout.addWidget(self.scale_header_lbl, 1, 5)
-        return (layout)
+
+    def _create_selection_headers(self, layout):
+        self.random_percent_lbl = QtWidgets.QLabel("Percentage Selection")
+        self.random_percent_lbl.setStyleSheet("font: bold")
+
+        layout.addWidget(self.random_percent_lbl, 5, 2)
 
     def rotate_dsbxes(self):
         self.rotation_x_min_dsbx = QtWidgets.QDoubleSpinBox()
@@ -185,6 +196,16 @@ class Scatter(object):
                                           expand=True)
         cmds.select(vtx_selection)
         return vtx_selection
+
+    def rand_selection(self):
+        seed = 1235
+        percentage_selection = []
+        for idx in range(0, len(self.vert_selection)):
+            random.seed(idx + seed)
+            rand_value = random.random()
+            if rand_value <= 0.1:
+                percentage_selection.append(self.vert_selection[idx])
+        cmds.select(percentage_selection)
 
     def create_instances(self):
         scattered_instances = []
