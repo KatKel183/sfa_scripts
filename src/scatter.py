@@ -64,8 +64,8 @@ class ScatterUI(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel("ScaleY"), 2, 5)
         layout.addWidget(QtWidgets.QLabel("ScaleZ"), 2, 6)
 
-        layout.addWidget(QtWidgets.QLabel("min"), 3, 0)
-        layout.addWidget(QtWidgets.QLabel("max"), 4, 0)
+        layout.addWidget(QtWidgets.QLabel("minimum"), 3, 0)
+        layout.addWidget(QtWidgets.QLabel("maximum"), 4, 0)
 
         layout.addWidget(self.rotation_x_min_dsbx, 3, 1)
         layout.addWidget(self.rotation_x_max_dsbx, 4, 1)
@@ -113,10 +113,17 @@ class ScatterUI(QtWidgets.QDialog):
         layout.addWidget(self.scale_header_lbl, 1, 5)
 
     def _create_selection_headers(self, layout):
-        self.random_percent_lbl = QtWidgets.QLabel("Percentage Selection")
-        self.random_percent_lbl.setStyleSheet("font: bold")
+        self.rand_percent_lbl = QtWidgets.QLabel("Percentage Selected:")
+        self.rand_percent_lbl.setStyleSheet("font: bold")
 
-        layout.addWidget(self.random_percent_lbl, 5, 2)
+        self.rand_percent_select_dsbx = QtWidgets.QDoubleSpinBox()
+        self.rand_percent_select_dsbx.setMaximum(1.00)
+
+        layout.addWidget(self.rand_percent_lbl, 5, 0)
+
+        layout.addWidget(QtWidgets.QLabel("Out of 100% (1.00)"), 6, 0)
+
+        layout.addWidget(self.rand_percent_select_dsbx, 6, 1)
 
     def rotate_dsbxes(self):
         self.rotation_x_min_dsbx = QtWidgets.QDoubleSpinBox()
@@ -186,6 +193,8 @@ class Scatter(object):
         # Neither of these are editable in the GUI
         self.scatter_source_object = 'pCube1'
         self.scatter_where_selected = []
+        # percentage selection, checkbox, etc
+        self.percent_set = 0.1
 
 
     def vert_selection(self):
@@ -203,7 +212,7 @@ class Scatter(object):
         for idx in range(0, len(self.vert_selection)):
             random.seed(idx + seed)
             rand_value = random.random()
-            if rand_value <= 0.1:
+            if rand_value <= self.percent_set:
                 percentage_selection.append(self.vert_selection[idx])
         cmds.select(percentage_selection)
 
