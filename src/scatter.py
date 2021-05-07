@@ -86,14 +86,10 @@ class ScatterUI(QtWidgets.QDialog):
     def _create_ui_headers(self):
         self.scatter_header_lbl = QtWidgets.QLabel("Choose Source Object: ")
         self.scatter_header_lbl.setStyleSheet("font:bold")
-        self.destination_header_lbl = QtWidgets.QLabel(
-            "Choose Object/Vertices to Scatter To")
 
         self.scatter_object_le = QtWidgets.QLineEdit(
             self.scatter_slot.scatter_source_object)
         self.scatter_object_le.setMinimumWidth(100)
-        self.destination_object_le = QtWidgets.QLineEdit()
-        self.destination_object_le.setMinimumWidth(50)
 
         layout = QtWidgets.QGridLayout()
         layout.addWidget(self.scatter_header_lbl, 0, 0)
@@ -101,29 +97,37 @@ class ScatterUI(QtWidgets.QDialog):
         return (layout)
 
     def _create_transform_headers(self, layout):
-        self.destination_header_lbl.setStyleSheet("font:bold")
         self.rotate_header_lbl = QtWidgets.QLabel("Rotate")
         self.rotate_header_lbl.setStyleSheet("font: bold")
         self.scale_header_lbl = QtWidgets.QLabel("Scale (default is 1)")
         self.scale_header_lbl.setStyleSheet("font: bold")
 
-        layout.addWidget(self.destination_header_lbl, 0, 3)
-        layout.addWidget(self.destination_object_le, 0, 5)
         layout.addWidget(self.rotate_header_lbl, 1, 2)
         layout.addWidget(self.scale_header_lbl, 1, 5)
 
     def _create_selection_headers(self, layout):
-        self.rand_percent_lbl = QtWidgets.QLabel("Percentage Selected:")
-        self.rand_percent_lbl.setStyleSheet("font: bold")
+        self.rand_percent_header_lbl = QtWidgets.QLabel("Percentage Selected:")
+        self.rand_percent_header_lbl.setStyleSheet("font: bold")
 
+        layout.addWidget(QtWidgets.QLabel("Out of 100% (1.00)"), 6, 0)
         self.rand_percent_select_dsbx = QtWidgets.QDoubleSpinBox()
         self.rand_percent_select_dsbx.setMaximum(1.00)
 
-        layout.addWidget(self.rand_percent_lbl, 5, 0)
-
-        layout.addWidget(QtWidgets.QLabel("Out of 100% (1.00)"), 6, 0)
-
+        layout.addWidget(self.rand_percent_header_lbl, 5, 0)
         layout.addWidget(self.rand_percent_select_dsbx, 6, 1)
+
+        self._create_seed_ui(layout)
+
+    def _create_seed_ui(self, layout):
+        self.seed_header_lbl = QtWidgets.QLabel("Set Seed:")
+        self.seed_header_lbl.setStyleSheet("font: bold")
+
+        self.set_seed_sbx = QtWidgets.QSpinBox()
+        self.set_seed_sbx.setMaximum(9999)
+        self.set_seed_sbx.setFixedWidth(100)
+
+        layout.addWidget(self.seed_header_lbl, 5, 3)
+        layout.addWidget(self.set_seed_sbx, 6, 3)
 
     def rotate_dsbxes(self):
         self.rotation_x_min_dsbx = QtWidgets.QDoubleSpinBox()
@@ -164,10 +168,11 @@ class ScatterUI(QtWidgets.QDialog):
 
     @QtCore.Slot()
     def _scatter_slot(self):
-        self._set_values_from_ui()
+        self._set_transform_values_from_ui()
+        self._set_selection_values_from_ui()
         self.scatter_slot.create_instances()
 
-    def _set_values_from_ui(self):
+    def _set_transform_values_from_ui(self):
         self.scatter_slot.rotation_min[0] = self.rotation_x_min_dsbx.value()
         self.scatter_slot.rotation_max[0] = self.rotation_x_max_dsbx.value()
         self.scatter_slot.rotation_min[1] = self.rotation_y_min_dsbx.value()
@@ -182,6 +187,10 @@ class ScatterUI(QtWidgets.QDialog):
         self.scatter_slot.scale_min[2] = self.scale_z_min_dsbx.value()
         self.scatter_slot.scale_max[2] = self.scale_z_max_dsbx.value()
 
+    def _set_selection_values_from_ui(self):
+        self.scatter_slot.percent_set = self.rand_percent_select_dsbx.value()
+        self.scatter_slot.set_seed = self.set_seed_sbx.value()
+
 
 class Scatter(object):
 
@@ -192,10 +201,9 @@ class Scatter(object):
         self.scale_max = [10, 10, 10]
         # Neither of these are editable in the GUI
         self.scatter_source_object = 'pCube1'
-        self.scatter_where_selected = []
         # percentage selection, checkbox, etc
         self.percent_set = 0.1
-
+        self.set_seed = 1235
 
     def vert_selection(self):
         selection = cmds.ls(orderedSelection=True, flatten=True)
@@ -207,27 +215,29 @@ class Scatter(object):
         return vtx_selection
 
     def rand_selection(self):
-        seed = 1235
         percentage_selection = []
-        for idx in range(0, len(self.vert_selection)):
-            random.seed(idx + seed)
+        verts_selected = self.vert_selection()
+        random.seed(self.set_seed)
+
+        for idx in range(0, len(verts_selected)):
             rand_value = random.random()
             if rand_value <= self.percent_set:
-                percentage_selection.append(self.vert_selection[idx])
+                percentage_selection.append(verts_selected[idx])
         cmds.select(percentage_selection)
+        return percentage_selection
 
     def create_instances(self):
         scattered_instances = []
-        for vtx in self.vert_selection():
-            self.scatter_where_selected.append(vtx)
+        for vtx in self.rand_selection():
             pos = cmds.pointPosition(vtx)
             scatter_instance = cmds.instance(self.scatter_source_object,
                                              name="scatter_1")
             scattered_instances.extend(scatter_instance)
-            cmds.move(pos[0], pos[1], pos[2], self.scatter_source_object,
+            cmds.move(pos[0], pos[1], pos[2], scatter_instance,
                       worldSpace=True)
             self.rand_rotation(scatter_instance[0])
             self.rand_scale(scatter_instance[0])
+            # self.constrain_instance(scatter_instance[0])
         cmds.group(scattered_instances, name="scattered")
 
     def rand_rotation(self, scatter_instance):
@@ -264,3 +274,9 @@ class Scatter(object):
 
         scale_z = random.uniform(self.scale_min[2], self.scale_max[2])
         cmds.setAttr(scatter_instance + '.scaleZ', scale_z)
+
+    def constrain_instance(self, scatter_instance):
+        constraint = cmds.normalConstraint(['pSphere1.vtx[37]'], 'scatter_36')
+        # print(constraint)
+        cmds.delete(constraint)
+       # cmds.pointOnPolyConstraint
