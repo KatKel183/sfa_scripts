@@ -52,6 +52,7 @@ class ScatterUI(QtWidgets.QDialog):
         self._create_dsbx_headers(layout)
         self._create_transform_headers(layout)
         self._create_selection_headers(layout)
+        self._create_checkbox_ui(layout)
         self._source_obj_btn_slot()
 
         return layout
@@ -131,6 +132,14 @@ class ScatterUI(QtWidgets.QDialog):
 
         layout.addWidget(self.seed_header_lbl, 5, 3)
         layout.addWidget(self.set_seed_sbx, 6, 3)
+
+    def _create_checkbox_ui(self, layout):
+        self.checkbox_lbl = QtWidgets.QLabel("Align to normals")
+        self.checkbox_lbl.setStyleSheet("font: bold")
+        self.checkbox_bx = QtWidgets.QCheckBox()
+
+        layout.addWidget(self.checkbox_lbl, 5, 5)
+        layout.addWidget(self.checkbox_bx, 6, 5)
 
     def rotate_dsbxes(self):
         self.rotation_x_min_dsbx = QtWidgets.QDoubleSpinBox()
