@@ -53,6 +53,9 @@ class ScatterUI(QtWidgets.QDialog):
         self._create_transform_headers(layout)
         self._create_selection_headers(layout)
         self._create_checkbox_ui(layout)
+        self._create_positional_headers(layout)
+        self._create_positional_dsbxes(layout)
+        self._layout_positional_dsbxes(layout)
         self._source_obj_btn_slot()
 
         return layout
@@ -82,8 +85,6 @@ class ScatterUI(QtWidgets.QDialog):
         layout.addWidget(self.scale_z_min_dsbx, 3, 6)
         layout.addWidget(self.scale_z_max_dsbx, 4, 6)
 
-        return layout
-
     def _create_ui_headers(self):
         self.scatter_header_lbl = QtWidgets.QLabel("Choose Source Object: ")
         self.scatter_header_lbl.setStyleSheet("font:bold")
@@ -98,7 +99,8 @@ class ScatterUI(QtWidgets.QDialog):
         layout.addWidget(self.scatter_header_lbl, 0, 0)
         layout.addWidget(self.scatter_object_le, 0, 2)
         layout.addWidget(self.source_object_btn, 0, 5)
-        return (layout)
+
+        return layout
 
     def _create_transform_headers(self, layout):
         self.rotate_header_lbl = QtWidgets.QLabel("Rotate")
@@ -140,6 +142,46 @@ class ScatterUI(QtWidgets.QDialog):
 
         layout.addWidget(self.checkbox_lbl, 5, 5)
         layout.addWidget(self.checkbox_bx, 6, 5)
+
+    def _create_positional_headers(self, layout):
+        self.pos_header_lbl = QtWidgets.QLabel("Position")
+        self.pos_header_lbl.setStyleSheet("font: bold")
+
+        self.pos_x_header_lbl = QtWidgets.QLabel("PosX")
+        self.pos_y_header_lbl = QtWidgets.QLabel("PosY")
+        self.pos_z_header_lbl = QtWidgets.QLabel("PosZ")
+
+        layout.addWidget(self.pos_header_lbl, 8, 2)
+        layout.addWidget(self.pos_x_header_lbl, 9, 1)
+        layout.addWidget(self.pos_y_header_lbl, 9, 2)
+        layout.addWidget(self.pos_z_header_lbl, 9, 3)
+
+        layout.addWidget(QtWidgets.QLabel("minimum"), 10, 0)
+        layout.addWidget(QtWidgets.QLabel("maximum"), 11, 0)
+
+    def _create_positional_dsbxes(self, layout):
+        self.pos_x_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.pos_x_min_dsbx.setMaximum(12)
+        self.pos_x_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.pos_x_max_dsbx.setMaximum(12)
+
+        self.pos_y_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.pos_y_min_dsbx.setMaximum(12)
+        self.pos_y_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.pos_y_max_dsbx.setMaximum(12)
+
+        self.pos_z_min_dsbx = QtWidgets.QDoubleSpinBox()
+        self.pos_z_min_dsbx.setMaximum(12)
+        self.pos_z_max_dsbx = QtWidgets.QDoubleSpinBox()
+        self.pos_z_max_dsbx.setMaximum(12)
+
+    def _layout_positional_dsbxes(self, layout):
+        layout.addWidget(self.pos_x_min_dsbx, 10, 1)
+        layout.addWidget(self.pos_x_max_dsbx, 11, 1)
+        layout.addWidget(self.pos_y_min_dsbx, 10, 2)
+        layout.addWidget(self.pos_y_max_dsbx, 11, 2)
+        layout.addWidget(self.pos_z_min_dsbx, 10, 3)
+        layout.addWidget(self.pos_z_max_dsbx, 11, 3)
 
     def rotate_dsbxes(self):
         self.rotation_x_min_dsbx = QtWidgets.QDoubleSpinBox()
@@ -217,9 +259,11 @@ class Scatter(object):
         self.rotation_max = [360, 360, 360]
         self.scale_min = [1, 1, 1]
         self.scale_max = [10, 10, 10]
-        # needs to be connected to GUI
+        self.pos_min = [0, 0, 0]
+        # the edge of the grid is 12 out
+        self.pos_max = [12, 12, 12]
+        # source object should be connected to GUI
         self.scatter_source_object = 'pCube1'
-        # percentage selection, checkbox, etc
         self.percent_set = 0.1
         self.set_seed = 1235
         self.check_constraint = False
@@ -256,6 +300,8 @@ class Scatter(object):
                       worldSpace=True)
             self.rand_rotation(scatter_instance[0])
             self.rand_scale(scatter_instance[0])
+            # self.rand_translate(scatter_instance[0])
+            # self.pos_offset(scatter_instance[0])
             if self.check_constraint is True:
                 self.constrain_instance(scatter_instance[0])
         cmds.group(scattered_instances, name="scattered")
@@ -295,8 +341,26 @@ class Scatter(object):
         scale_z = random.uniform(self.scale_min[2], self.scale_max[2])
         cmds.setAttr(scatter_instance + '.scaleZ', scale_z)
 
+    def pos_offset(self, scatter_instance):
+        self.constrain_instance(scatter_instance)
+        cmds.move(self.pos_min[0], self.pos_min[1], self.pos_min[2],
+                  scatter_instance, objectSpace=True, relative=True)
+        # cmds.delete(constraint)
+
+    def rand_translate(self, scatter_instance):
+        translate_x = random.uniform(self.pos_min[0],
+                                     self.pos_max[0])
+        cmds.setAttr(scatter_instance + '.translateX', translate_x)
+
+        translate_y = random.uniform(self.pos_min[1],
+                                     self.pos_max[1])
+        cmds.setAttr(scatter_instance + '.translateY', translate_y)
+
+        translate_z = random.uniform(self.pos_min[2],
+                                     self.pos_max[2])
+        cmds.setAttr(scatter_instance + '.translateZ', translate_z)
+
     def constrain_instance(self, scatter_instance):
         for vtx in self.vert_selection():
             constraint = cmds.normalConstraint(vtx, 'scatter_1')
-            # should this be in a second loop?
-            cmds.delete(constraint)
+            return constraint
