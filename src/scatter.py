@@ -207,6 +207,7 @@ class ScatterUI(QtWidgets.QDialog):
     def _set_selection_values_from_ui(self):
         self.scatter_slot.percent_set = self.rand_percent_select_dsbx.value()
         self.scatter_slot.set_seed = self.set_seed_sbx.value()
+        self.scatter_slot.check_constraint = self.checkbox_bx.isChecked()
 
 
 class Scatter(object):
@@ -221,7 +222,7 @@ class Scatter(object):
         # percentage selection, checkbox, etc
         self.percent_set = 0.1
         self.set_seed = 1235
-        self.check_constant = False
+        self.check_constraint = False
 
     def vert_selection(self):
         selection = cmds.ls(orderedSelection=True, flatten=True)
@@ -255,7 +256,7 @@ class Scatter(object):
                       worldSpace=True)
             self.rand_rotation(scatter_instance[0])
             self.rand_scale(scatter_instance[0])
-            if self.check_constant is True:
+            if self.check_constraint is True:
                 self.constrain_instance(scatter_instance[0])
         cmds.group(scattered_instances, name="scattered")
 
@@ -295,10 +296,7 @@ class Scatter(object):
         cmds.setAttr(scatter_instance + '.scaleZ', scale_z)
 
     def constrain_instance(self, scatter_instance):
-        # is this redundant? could it just be -- vtx -- in the code?
-        verts_selected = self.vert_selection()
         for vtx in self.vert_selection():
-            constraint = cmds.normalConstraint(verts_selected[vtx],
-                                               'scatter_' + str(vtx))
+            constraint = cmds.normalConstraint(vtx, 'scatter_1')
             # should this be in a second loop?
             cmds.delete(constraint)
