@@ -86,14 +86,16 @@ class ScatterUI(QtWidgets.QDialog):
     def _create_ui_headers(self):
         self.scatter_header_lbl = QtWidgets.QLabel("Choose Source Object: ")
         self.scatter_header_lbl.setStyleSheet("font:bold")
+        self.scatter_object_le = QtWidgets.QLineEdit()
 
-        self.scatter_object_le = QtWidgets.QLineEdit(
-            self.scatter_slot.scatter_source_object)
         self.scatter_object_le.setMinimumWidth(100)
+
+        self.source_object_btn = QtWidgets.QPushButton("Update Source Object")
 
         layout = QtWidgets.QGridLayout()
         layout.addWidget(self.scatter_header_lbl, 0, 0)
         layout.addWidget(self.scatter_object_le, 0, 2)
+        layout.addWidget(self.source_object_btn, 0, 5)
         return (layout)
 
     def _create_transform_headers(self, layout):
@@ -165,12 +167,17 @@ class ScatterUI(QtWidgets.QDialog):
 
     def create_connections(self):
         self.scatter_btn.clicked.connect(self._scatter_slot)
+        self.source_object_btn.clicked.connect(self._source_obj_btn_slot)
 
     @QtCore.Slot()
     def _scatter_slot(self):
         self._set_transform_values_from_ui()
         self._set_selection_values_from_ui()
         self.scatter_slot.create_instances()
+
+    @QtCore.Slot()
+    def _source_obj_btn_slot(self):
+        print("it worked")
 
     def _set_transform_values_from_ui(self):
         self.scatter_slot.rotation_min[0] = self.rotation_x_min_dsbx.value()
