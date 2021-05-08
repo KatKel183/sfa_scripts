@@ -38,7 +38,6 @@ class ScatterUI(QtWidgets.QDialog):
         self.scatter_btn = QtWidgets.QPushButton("Scatter Objects")
 
         self.main_layout.addWidget(self.title_lbl)
-        # self.main_layout.addLayout(self.textbox_lay)
         self.main_layout.addLayout(self.input_layout)
         self.main_layout.addWidget(self.scatter_btn)
 
@@ -51,8 +50,9 @@ class ScatterUI(QtWidgets.QDialog):
         self.rotate_dsbxes()
         self.scale_dsbxes()
         self._create_dsbx_headers(layout)
-        self._create_selection_headers(layout)
         self._create_transform_headers(layout)
+        self._create_selection_headers(layout)
+        self._source_obj_btn_slot()
 
         return layout
 
@@ -86,8 +86,9 @@ class ScatterUI(QtWidgets.QDialog):
     def _create_ui_headers(self):
         self.scatter_header_lbl = QtWidgets.QLabel("Choose Source Object: ")
         self.scatter_header_lbl.setStyleSheet("font:bold")
-        self.scatter_object_le = QtWidgets.QLineEdit()
 
+        self.scatter_object_le = QtWidgets.QLineEdit()
+        self.scatter_object_le.displayText()
         self.scatter_object_le.setMinimumWidth(100)
 
         self.source_object_btn = QtWidgets.QPushButton("Update Source Object")
@@ -206,11 +207,12 @@ class Scatter(object):
         self.rotation_max = [360, 360, 360]
         self.scale_min = [1, 1, 1]
         self.scale_max = [10, 10, 10]
-        # Neither of these are editable in the GUI
+        # needs to be connected to GUI
         self.scatter_source_object = 'pCube1'
         # percentage selection, checkbox, etc
         self.percent_set = 0.1
         self.set_seed = 1235
+        self.check_constant = False
 
     def vert_selection(self):
         selection = cmds.ls(orderedSelection=True, flatten=True)
@@ -244,7 +246,8 @@ class Scatter(object):
                       worldSpace=True)
             self.rand_rotation(scatter_instance[0])
             self.rand_scale(scatter_instance[0])
-            # self.constrain_instance(scatter_instance[0])
+            if self.check_constant is True:
+                self.constrain_instance(scatter_instance[0])
         cmds.group(scattered_instances, name="scattered")
 
     def rand_rotation(self, scatter_instance):
@@ -283,7 +286,10 @@ class Scatter(object):
         cmds.setAttr(scatter_instance + '.scaleZ', scale_z)
 
     def constrain_instance(self, scatter_instance):
-        constraint = cmds.normalConstraint(['pSphere1.vtx[37]'], 'scatter_36')
-        # print(constraint)
-        cmds.delete(constraint)
-       # cmds.pointOnPolyConstraint
+        # is this redundant? could it just be -- vtx -- in the code?
+        verts_selected = self.vert_selection()
+        for vtx in self.vert_selection():
+            constraint = cmds.normalConstraint(verts_selected[vtx],
+                                               'scatter_' + str(vtx))
+            # should this be in a second loop?
+            cmds.delete(constraint)
