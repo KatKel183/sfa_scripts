@@ -291,7 +291,6 @@ class Scatter(object):
             pos = cmds.pointPosition(vtx)
             scatter_instance = cmds.instance(self.scatter_source_object,
                                              name=self.instance_name+"_1")
-            print(self.instance_name)
             scattered_instances.extend(scatter_instance)
             cmds.move(pos[0], pos[1], pos[2], scatter_instance,
                       worldSpace=True)
@@ -340,10 +339,9 @@ class Scatter(object):
     def pos_offset(self, scatter_instance):
         cmds.move(self.pos_list[0], self.pos_list[1], self.pos_list[2],
                   scatter_instance, objectSpace=True, relative=True)
-        # cmds.delete(self.constrain_instance.constraint)
 
     def constrain_instance(self, scatter_instance):
         for vtx in self.vert_selection():
             constraint = cmds.normalConstraint(vtx, scatter_instance)
-            # cmds.delete(constraint)
-            return constraint
+            cmds.delete(constraint)
+            # return constraint
