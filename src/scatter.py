@@ -221,10 +221,6 @@ class ScatterUI(QtWidgets.QDialog):
         self._set_positional_values_from_ui()
         self.scatter_slot.create_instances()
 
-    @QtCore.Slot()
-    def _source_obj_btn_slot(self):
-        print("source object slots")
-
     def _set_transform_values_from_ui(self):
         self.scatter_slot.rotation_min[0] = self.rotation_x_min_dsbx.value()
         self.scatter_slot.rotation_max[0] = self.rotation_x_max_dsbx.value()
@@ -247,7 +243,6 @@ class ScatterUI(QtWidgets.QDialog):
 
         self.scatter_slot.scatter_source_object = self.scatter_object_le.text()
         self.scatter_slot.instance_name = self.instance_name_le.text()
-        print(self.scatter_slot.check_constraint)
 
     def _set_positional_values_from_ui(self):
         self.scatter_slot.pos_list[0] = self.pos_x_dsbx.value()
@@ -263,8 +258,7 @@ class Scatter(object):
         self.scale_min = [1, 1, 1]
         self.scale_max = [10, 10, 10]
         self.pos_list = [0, 0, 0]
-        # source object should be connected to GUI
-        self.scatter_source_object = 'Tree1'
+        self.scatter_source_object = 'pCube1'
         self.instance_name = "scatter"
         self.percent_set = 0.1
         self.set_seed = 1235
@@ -350,8 +344,5 @@ class Scatter(object):
     def constrain_instance(self, scatter_instance):
         for vtx in self.vert_selection():
             constraint = cmds.normalConstraint(vtx, 'scatter_1')
-            if self.check_constraint is False:
-                print("constraint is false")
-                cmds.delete(constraint)
-            print("constraint applied")
+            # cmds.delete(constraint)
             return constraint
