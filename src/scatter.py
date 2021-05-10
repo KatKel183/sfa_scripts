@@ -87,7 +87,8 @@ class ScatterUI(QtWidgets.QDialog):
         layout.addWidget(self.scale_z_max_dsbx, 4, 6)
 
     def _create_ui_headers(self):
-        self.scatter_header_lbl = QtWidgets.QLabel("Choose Source Object: ")
+        self.scatter_header_lbl = QtWidgets.QLabel(
+            "Type name of Source Object:")
         self.scatter_header_lbl.setStyleSheet("font:bold")
         self.scatter_object_le = QtWidgets.QLineEdit()
         self.scatter_object_le.setMinimumWidth(100)
@@ -96,12 +97,9 @@ class ScatterUI(QtWidgets.QDialog):
         self.instance_name_lbl.setStyleSheet("font:bold")
         self.instance_name_le = QtWidgets.QLineEdit()
 
-        self.source_object_btn = QtWidgets.QPushButton("Update Source Object")
-
         layout = QtWidgets.QGridLayout()
         layout.addWidget(self.scatter_header_lbl, 0, 0)
         layout.addWidget(self.scatter_object_le, 0, 2)
-        layout.addWidget(self.source_object_btn, 0, 5)
         layout.addWidget(self.instance_name_lbl, 9, 5)
         layout.addWidget(self.instance_name_le, 10, 5)
 
@@ -215,7 +213,6 @@ class ScatterUI(QtWidgets.QDialog):
 
     def create_connections(self):
         self.scatter_btn.clicked.connect(self._scatter_slot)
-        self.source_object_btn.clicked.connect(self._source_obj_btn_slot)
 
     @QtCore.Slot()
     def _scatter_slot(self):
@@ -248,8 +245,8 @@ class ScatterUI(QtWidgets.QDialog):
         self.scatter_slot.set_seed = self.set_seed_sbx.value()
         self.scatter_slot.check_constraint = self.checkbox_bx.isChecked()
 
-        self.scatter_slot.instance_name = self.instance_name_le.text()
         self.scatter_slot.scatter_source_object = self.scatter_object_le.text()
+        self.scatter_slot.instance_name = self.instance_name_le.text()
         print(self.scatter_slot.check_constraint)
 
     def _set_positional_values_from_ui(self):
