@@ -57,7 +57,6 @@ class ScatterUI(QtWidgets.QDialog):
         self._create_checkbox_ui(layout)
         self._create_positional_headers(layout)
         self._create_positional_dsbxes(layout)
-        self._source_obj_btn_slot()
 
         return layout
 
@@ -65,9 +64,10 @@ class ScatterUI(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel("RotateX"), 2, 1)
         layout.addWidget(QtWidgets.QLabel("RotateY"), 2, 2)
         layout.addWidget(QtWidgets.QLabel("RotateZ"), 2, 3)
-        layout.addWidget(QtWidgets.QLabel("ScaleX"), 2, 4)
-        layout.addWidget(QtWidgets.QLabel("ScaleY"), 2, 5)
-        layout.addWidget(QtWidgets.QLabel("ScaleZ"), 2, 6)
+        layout.addWidget(QtWidgets.QLabel("    "), 2, 4)
+        layout.addWidget(QtWidgets.QLabel("ScaleX"), 2, 5)
+        layout.addWidget(QtWidgets.QLabel("ScaleY"), 2, 6)
+        layout.addWidget(QtWidgets.QLabel("ScaleZ"), 2, 7)
 
         layout.addWidget(QtWidgets.QLabel("minimum"), 3, 0)
         layout.addWidget(QtWidgets.QLabel("maximum"), 4, 0)
@@ -79,12 +79,12 @@ class ScatterUI(QtWidgets.QDialog):
         layout.addWidget(self.rotation_z_min_dsbx, 3, 3)
         layout.addWidget(self.rotation_z_max_dsbx, 4, 3)
 
-        layout.addWidget(self.scale_x_min_dsbx, 3, 4)
-        layout.addWidget(self.scale_x_max_dsbx, 4, 4)
-        layout.addWidget(self.scale_y_min_dsbx, 3, 5)
-        layout.addWidget(self.scale_y_max_dsbx, 4, 5)
-        layout.addWidget(self.scale_z_min_dsbx, 3, 6)
-        layout.addWidget(self.scale_z_max_dsbx, 4, 6)
+        layout.addWidget(self.scale_x_min_dsbx, 3, 5)
+        layout.addWidget(self.scale_x_max_dsbx, 4, 5)
+        layout.addWidget(self.scale_y_min_dsbx, 3, 6)
+        layout.addWidget(self.scale_y_max_dsbx, 4, 6)
+        layout.addWidget(self.scale_z_min_dsbx, 3, 7)
+        layout.addWidget(self.scale_z_max_dsbx, 4, 7)
 
     def _create_ui_headers(self):
         self.scatter_header_lbl = QtWidgets.QLabel(
@@ -291,6 +291,7 @@ class Scatter(object):
             pos = cmds.pointPosition(vtx)
             scatter_instance = cmds.instance(self.scatter_source_object,
                                              name=self.instance_name+"_1")
+            print(self.instance_name)
             scattered_instances.extend(scatter_instance)
             cmds.move(pos[0], pos[1], pos[2], scatter_instance,
                       worldSpace=True)
@@ -343,6 +344,6 @@ class Scatter(object):
 
     def constrain_instance(self, scatter_instance):
         for vtx in self.vert_selection():
-            constraint = cmds.normalConstraint(vtx, 'scatter_1')
+            constraint = cmds.normalConstraint(vtx, 'self.scatter_instance')
             # cmds.delete(constraint)
             return constraint
