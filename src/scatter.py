@@ -344,6 +344,6 @@ class Scatter(object):
 
     def constrain_instance(self, scatter_instance):
         for vtx in self.vert_selection():
-            constraint = cmds.normalConstraint(vtx, 'self.scatter_instance')
+            constraint = cmds.normalConstraint(vtx, scatter_instance)
             # cmds.delete(constraint)
             return constraint
