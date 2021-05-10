@@ -168,10 +168,10 @@ class ScatterUI(QtWidgets.QDialog):
         self.pos_x_dsbx.setMinimum(-20)
 
         self.pos_y_dsbx = QtWidgets.QDoubleSpinBox()
-        self.pos_x_dsbx.setMinimum(-20)
+        self.pos_y_dsbx.setMinimum(-20)
 
         self.pos_z_dsbx = QtWidgets.QDoubleSpinBox()
-        self.pos_x_dsbx.setMinimum(-20)
+        self.pos_z_dsbx.setMinimum(-20)
 
         layout.addWidget(self.pos_x_dsbx, 10, 1)
         layout.addWidget(self.pos_y_dsbx, 10, 2)
